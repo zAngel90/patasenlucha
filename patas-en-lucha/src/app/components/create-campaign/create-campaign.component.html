@@ -1,0 +1,116 @@
+<div class="create-campaign-container">
+  <div class="form-container">
+    <h1>Crear Nueva Campaña</h1>
+    
+    <div class="alert alert-info mb-4">
+      <i class="fas fa-info-circle"></i>
+      Nota: Las campañas creadas pasan por un proceso de revisión antes de ser publicadas.
+    </div>
+
+    <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()" class="campaign-form">
+      <h2>Crear Nueva Campaña</h2>
+
+      <div *ngIf="error" class="alert alert-danger">
+        <mat-icon>error</mat-icon>
+        {{ error }}
+      </div>
+
+      <div *ngIf="success" class="alert alert-success">
+        <mat-icon>check_circle</mat-icon>
+        <div class="success-message">
+          <h4>¡Campaña Creada!</h4>
+          <p>{{ success }}</p>
+          <div class="redirect-message">
+            Serás redirigido en unos segundos...
+            <mat-spinner diameter="20"></mat-spinner>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Título de la Campaña*</label>
+        <input type="text" id="title" formControlName="title" class="form-control" placeholder="Ingresa un título descriptivo">
+        <div *ngIf="campaignForm.get('title')?.invalid && campaignForm.get('title')?.touched" class="error-message">
+          El título debe tener al menos 5 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descripción*</label>
+        <textarea id="description" formControlName="description" class="form-control" rows="4" placeholder="Describe la situación del animal y por qué necesita ayuda"></textarea>
+        <div *ngIf="campaignForm.get('description')?.invalid && campaignForm.get('description')?.touched" class="error-message">
+          La descripción debe tener al menos 20 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="goal_amount">Meta de Recaudación (USD)*</label>
+        <input type="number" id="goal_amount" formControlName="goal_amount" class="form-control" min="1" placeholder="Ingresa el monto necesario">
+        <div *ngIf="campaignForm.get('goal_amount')?.invalid && campaignForm.get('goal_amount')?.touched" class="error-message">
+          El monto debe ser mayor a 0
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Imágenes del Animal (máximo {{ maxImages }})*</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="form-control">
+        <div class="image-previews" *ngIf="imagePreviews.length > 0">
+          <div *ngFor="let preview of imagePreviews; let i = index" class="preview-container">
+            <img [src]="preview" alt="Preview" class="image-preview">
+            <button type="button" (click)="removeImage(i)" class="remove-button">×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="medical-proof-section">
+        <h3>Comprobante Médico*</h3>
+        <p class="info-text">
+          Para garantizar la transparencia, es necesario presentar un comprobante médico que respalde la condición del animal.
+        </p>
+
+        <div class="form-group">
+          <label for="proof_type">Tipo de Comprobante*</label>
+          <select id="proof_type" formControlName="proof_type" class="form-control">
+            <option value="">Selecciona el tipo de comprobante</option>
+            <option *ngFor="let type of proofTypes" [value]="type.value">{{ type.label }}</option>
+          </select>
+          <div *ngIf="campaignForm.get('proof_type')?.invalid && campaignForm.get('proof_type')?.touched" class="error-message">
+            Debes seleccionar un tipo de comprobante
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="proof_description">Descripción del Comprobante*</label>
+          <textarea id="proof_description" formControlName="proof_description" class="form-control" rows="2" 
+                    placeholder="Describe brevemente el contenido del comprobante (ej: Factura de consulta veterinaria del 15/02/2024)"></textarea>
+          <div *ngIf="campaignForm.get('proof_description')?.invalid && campaignForm.get('proof_description')?.touched" class="error-message">
+            La descripción del comprobante debe tener al menos 10 caracteres
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Archivo del Comprobante*</label>
+          <input type="file" (change)="onMedicalProofSelected($event)" accept="image/*,.pdf" class="form-control">
+          <div class="medical-proof-preview" *ngIf="medicalProofPreview">
+            <div class="preview-container">
+              <img *ngIf="selectedMedicalProof && selectedMedicalProof.type && selectedMedicalProof.type.startsWith('image/')" 
+                   [src]="medicalProofPreview" 
+                   alt="Medical Proof Preview" 
+                   class="proof-preview">
+              <div *ngIf="selectedMedicalProof && selectedMedicalProof.type === 'application/pdf'" class="pdf-preview">
+                Archivo PDF seleccionado
+              </div>
+              <button type="button" (click)="removeMedicalProof()" class="remove-button">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="campaignForm.invalid || loading" class="btn btn-primary">
+          {{ loading ? 'Creando campaña...' : 'Crear Campaña' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

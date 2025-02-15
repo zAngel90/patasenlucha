@@ -1,0 +1,138 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Ayuda a cambiar vidas, una pata a la vez</h1>
+        <p>Únete a nuestra comunidad de amantes de los animales y ayuda a transformar la vida de mascotas necesitadas.</p>
+        <div class="cta-buttons">
+          <a routerLink="/create-campaign" class="btn btn-primary">Crear Campaña</a>
+          <a routerLink="/auth" class="btn btn-outline">Unirse</a>
+        </div>
+      </div>
+      <div class="hero-image card-3d">
+        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" alt="Perro rescatado mirando a la cámara">
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">{{ campaigns.length || 0 }}</div>
+          <div class="stat-label">Campañas Activas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Transparencia</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">+1000</div>
+          <div class="stat-label">Mascotas Ayudadas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">+500</div>
+          <div class="stat-label">Donantes Activos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Campaigns Section -->
+  <section class="campaigns">
+    <div class="container">
+      <div class="campaigns-header">
+        <h2>Campañas Activas</h2>
+        <p>Ayuda a estas mascotas a encontrar una mejor vida</p>
+      </div>
+
+      <div class="carousel-container" *ngIf="!loading && !error && campaigns && campaigns.length > 0">
+        <button class="carousel-button prev" (click)="prevSlide()" *ngIf="campaigns.length > 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <div class="carousel-track-container">
+          <div class="carousel-track" [style.transform]="'translateX(' + translateValue + 'px)'">
+            <div class="campaign-card" *ngFor="let campaign of displayCampaigns" [routerLink]="['/campaigns', campaign.id]">
+              <div class="campaign-status" [class.urgent]="isUrgent(campaign)">
+                {{ getCampaignStatus(campaign) }}
+              </div>
+              <div class="campaign-image">
+                <div class="inner-carousel">
+                  <div class="inner-carousel-track" [style.transform]="isBrowser ? 'translateX(' + getInnerTranslateValue(campaign) + 'px)' : 'none'">
+                    <div class="inner-carousel-slide" *ngFor="let imageUrl of campaign.image_urls || ['assets/images/default-campaign.jpg']">
+                      <img [src]="imageUrl" 
+                           [alt]="campaign.title"
+                           (error)="handleImageError($event)">
+                    </div>
+                  </div>
+                  <div class="inner-carousel-indicators" *ngIf="isBrowser && (campaign.image_urls?.length || 0) > 1">
+                    <button class="inner-indicator" 
+                            *ngFor="let _ of campaign.image_urls; let i = index" 
+                            [class.active]="getInnerCurrentIndex(campaign) === i"
+                            (click)="goToInnerSlide($event, campaign, i)">
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="campaign-content">
+                <div class="campaign-header">
+                  <h3 class="campaign-title">{{ campaign.title }}</h3>
+                  <span class="campaign-category" *ngIf="campaign.category">{{ campaign.category }}</span>
+                </div>
+                <p class="campaign-description">{{ campaign.description | slice:0:150 }}...</p>
+                <div class="campaign-meta">
+                  <div class="creator">
+                    <div class="avatar" [style.backgroundColor]="getAvatarColor(campaign.creator_name)">
+                      {{ campaign.creator_name?.charAt(0)?.toUpperCase() || 'U' }}
+                    </div>
+                    <div class="creator-info">
+                      <span class="creator-name">{{ campaign.creator_name || 'Usuario' }}</span>
+                      <span class="campaign-date">{{ campaign.created_at | date:'mediumDate' }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="campaign-footer">
+                  <button class="donate-btn" [routerLink]="['/campaigns', campaign.id]">
+                    Donar Ahora
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="carousel-button next" (click)="nextSlide()" *ngIf="campaigns.length > 1">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <div class="carousel-indicators" *ngIf="campaigns.length > 1">
+          <button class="indicator" 
+                  *ngFor="let _ of campaigns; let i = index" 
+                  [class.active]="currentIndex === i + 1"
+                  (click)="goToSlide(i)">
+          </button>
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="loading">
+        <div class="loading-spinner"></div>
+        <p>Cargando campañas...</p>
+      </div>
+
+      <div class="error" *ngIf="error">
+        <p>{{ error }}</p>
+        <button class="retry-btn" (click)="loadCampaigns()">Intentar de nuevo</button>
+      </div>
+
+      <div class="no-campaigns" *ngIf="!loading && !error && (!campaigns || campaigns.length === 0)">
+        <img src="assets/images/empty-state.svg" alt="No hay campañas">
+        <h2>No hay campañas disponibles</h2>
+        <p>¡Sé el primero en crear una campaña!</p>
+        <a routerLink="/create-campaign" class="btn-primary">Crear Campaña</a>
+      </div>
+    </div>
+  </section>
+</div>

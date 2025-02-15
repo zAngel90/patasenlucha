@@ -1,0 +1,199 @@
+.campaign-form-container {
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+}
+
+.campaign-form-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+      font-weight: 500;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #e1e1e1;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #FF7F50;
+      }
+
+      &.is-invalid {
+        border-color: #dc3545;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+  }
+
+  .image-upload-container {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+
+    .image-preview {
+      width: 200px;
+      height: 200px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .upload-button {
+      flex: 1;
+      position: relative;
+      height: 200px;
+      border: 2px dashed #e1e1e1;
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #FF7F50;
+        background-color: rgba(255, 127, 80, 0.05);
+      }
+
+      &.has-image {
+        border-style: solid;
+        background-color: #f8f9fa;
+      }
+
+      input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      i {
+        font-size: 2.5rem;
+        color: #FF7F50;
+        margin-bottom: 1rem;
+      }
+
+      span {
+        color: #666;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  .alert {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    
+    &.alert-danger {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #FF7F50;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: darken(#FF7F50, 10%);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .campaign-form-container {
+    padding: 2rem 1rem;
+  }
+
+  .campaign-form-card {
+    padding: 1.5rem;
+
+    .image-upload-container {
+      flex-direction: column;
+
+      .image-preview {
+        width: 100%;
+        height: 200px;
+      }
+
+      .upload-button {
+        width: 100%;
+      }
+    }
+  }
+}

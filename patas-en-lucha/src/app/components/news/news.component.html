@@ -1,0 +1,80 @@
+<div class="news-container">
+  <div class="news-header">
+    <h1>Noticias y Actualizaciones</h1>
+    <p>Mantente informado sobre nuestras últimas actividades y novedades</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-spinner" *ngIf="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error">
+    <mat-icon>error_outline</mat-icon>
+    <h2>¡Ups! Algo salió mal</h2>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadNews()">
+      <mat-icon>refresh</mat-icon>
+      Intentar de nuevo
+    </button>
+  </div>
+
+  <!-- No News State -->
+  <div class="no-news" *ngIf="!loading && !error && news.length === 0">
+    <mat-icon>article</mat-icon>
+    <h2>No hay noticias disponibles</h2>
+    <p>Pronto publicaremos nuevas actualizaciones.</p>
+  </div>
+
+  <!-- News Grid -->
+  <div class="news-grid" *ngIf="!loading && !error && news.length > 0">
+    <mat-card class="news-card" *ngFor="let item of news">
+      <div class="carousel-container">
+        <img [src]="getCurrentImage(item)"
+             [alt]="item.title"
+             (error)="handleImageError($event)">
+             
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators" *ngIf="item.image_urls && item.image_urls.length > 1">
+          <button class="indicator" 
+                  *ngFor="let _ of item.image_urls; let i = index"
+                  [class.active]="currentImageIndices[item.id!] === i"
+                  (click)="goToImage(item.id!, i, $event)">
+          </button>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button class="carousel-nav prev" 
+                *ngIf="item.image_urls && item.image_urls.length > 1"
+                (click)="goToImage(item.id!, (currentImageIndices[item.id!] - 1 + item.image_urls.length) % item.image_urls.length, $event)">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button class="carousel-nav next"
+                *ngIf="item.image_urls && item.image_urls.length > 1"
+                (click)="goToImage(item.id!, (currentImageIndices[item.id!] + 1) % item.image_urls.length, $event)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      
+      <mat-card-content>
+        <div class="news-header">
+          <h2>{{ item.title }}</h2>
+          <div class="news-meta">
+            <span class="creator">Por {{ item.creator_name }}</span>
+            <span class="date">{{ item.created_at | date }}</span>
+          </div>
+        </div>
+
+        <p class="news-content">{{ item.content }}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button [routerLink]="['/news', item.id]">
+          <mat-icon>visibility</mat-icon>
+          Leer más
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div> 

@@ -1,0 +1,73 @@
+<header class="header" [class.scrolled]="isScrolled">
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a routerLink="/" class="logo">
+          <img src="assets/logo.png" alt="Patas en Lucha">
+          <span>Patas en Lucha</span>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <ul class="nav-links" [class.active]="isMenuOpen">
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a></li>
+          <li><a routerLink="/campaigns" routerLinkActive="active">Campañas</a></li>
+          <li><a routerLink="/news" routerLinkActive="active">Noticias</a></li>
+          <li><a routerLink="/create-campaign" routerLinkActive="active" *ngIf="authService.isLoggedIn()">Crear Campaña</a></li>
+          <li *ngIf="authService.isAdmin()"><a routerLink="/admin" routerLinkActive="active" class="admin-link">Panel Admin</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <button class="nav-button" (click)="toggleMenu()">
+          <i class="fas" [class.fa-bars]="!isMenuOpen" [class.fa-times]="isMenuOpen"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Sobre Nosotros</h3>
+        <ul>
+          <li><a href="#"><i class="fas fa-heart"></i>Nuestra Misión</a></li>
+          <li><a href="#"><i class="fas fa-users"></i>Equipo</a></li>
+          <li><a href="#"><i class="fas fa-envelope"></i>Contacto</a></li>
+          <li><a href="#"><i class="fas fa-newspaper"></i>Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Ayuda</h3>
+        <ul>
+          <li><a href="#"><i class="fas fa-hand-holding-heart"></i>Cómo Donar</a></li>
+          <li><a href="#"><i class="fas fa-question-circle"></i>Preguntas Frecuentes</a></li>
+          <li><a href="#"><i class="fas fa-shield-alt"></i>Términos y Condiciones</a></li>
+          <li><a href="#"><i class="fas fa-lock"></i>Política de Privacidad</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Campañas</h3>
+        <ul>
+          <li><a href="#"><i class="fas fa-paw"></i>Campañas Activas</a></li>
+          <li><a href="#"><i class="fas fa-star"></i>Casos de Éxito</a></li>
+          <li><a href="#"><i class="fas fa-plus-circle"></i>Crear Campaña</a></li>
+          <li><a href="#"><i class="fas fa-hands-helping"></i>Cómo Ayudar</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="social-links">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p>&copy; 2024 Patas en Lucha. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,300 @@
+<div class="admin-dashboard">
+  <mat-card class="dashboard-header">
+    <mat-card-header>
+      <mat-card-title>Panel de Administración</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <mat-icon color="primary">pets</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ campaigns.length }}</div>
+              <div class="stat-label">Campañas Totales</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <mat-icon color="primary">check_circle</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ getApprovedCount() }}</div>
+              <div class="stat-label">Aprobadas</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <mat-icon color="accent">pending</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ getPendingCount() }}</div>
+              <div class="stat-label">Pendientes</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <mat-icon color="primary">monetization_on</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ getTotalAmount() | currency }}</div>
+              <div class="stat-label">Recaudado Total</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <mat-icon color="primary">article</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ news.length }}</div>
+              <div class="stat-label">Noticias Publicadas</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="dashboard-content">
+    <mat-card-content>
+      <div class="filters-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar campañas</mat-label>
+          <input matInput 
+                 [(ngModel)]="searchTerm" 
+                 (input)="onSearchChange($any($event.target).value)"
+                 placeholder="Buscar por título, descripción o creador">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-chip-listbox [(ngModel)]="currentFilter" (selectionChange)="onFilterChange($event)" aria-label="Filtros de estado">
+          <mat-chip-option value="all" selected>Todas</mat-chip-option>
+          <mat-chip-option value="pending" color="accent">Pendientes</mat-chip-option>
+          <mat-chip-option value="approved" color="primary">Aprobadas</mat-chip-option>
+          <mat-chip-option value="rejected" color="warn">Rechazadas</mat-chip-option>
+        </mat-chip-listbox>
+      </div>
+
+      <div class="actions-section">
+        <button mat-raised-button color="primary" routerLink="/admin/news">
+          <mat-icon>post_add</mat-icon>
+          Gestionar Noticias
+        </button>
+      </div>
+
+      <div class="loading-state" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando campañas...</p>
+      </div>
+
+      <div class="campaigns-grid" *ngIf="!loading">
+        <mat-card class="campaign-card" *ngFor="let campaign of filteredCampaigns">
+          <img mat-card-image 
+               [src]="campaign.image_urls && campaign.image_urls.length > 0 ? campaign.image_urls[0] : 'assets/images/default-campaign.jpg'"
+               [alt]="campaign.title"
+               (error)="onImageError($event)">
+          
+          <mat-card-header>
+            <mat-card-title>{{ campaign.title }}</mat-card-title>
+            <mat-card-subtitle>
+              <mat-icon [color]="getStatusColor(campaign.status)">{{ getStatusIcon(campaign.status) }}</mat-icon>
+              {{ campaign.status | titlecase }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="campaign-description">{{ campaign.description }}</p>
+            
+            <div class="campaign-meta">
+              <div class="meta-item">
+                <mat-icon>person</mat-icon>
+                <span>{{ campaign.creator_name }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{ campaign.created_at | date }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>monetization_on</mat-icon>
+                <span>{{ campaign.current_amount | currency }} / {{ campaign.goal_amount | currency }}</span>
+              </div>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="getProgressPercentage(campaign)"></div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button color="primary" (click)="openImageGallery(campaign)">
+              <mat-icon>photo_library</mat-icon>
+              Ver Imágenes
+            </button>
+            <button mat-button color="primary" (click)="openMedicalProof(campaign)" *ngIf="campaign.medical_proof">
+              <mat-icon>medical_services</mat-icon>
+              Ver Comprobante Médico
+            </button>
+            <button mat-button color="primary" [routerLink]="['/campaigns', campaign.id]">
+              <mat-icon>visibility</mat-icon>
+              Ver Detalles
+            </button>
+            <button mat-button color="accent" [routerLink]="['/admin/approve-campaigns']">
+              <mat-icon>settings</mat-icon>
+              Gestionar
+            </button>
+            <button mat-button color="warn" (click)="deleteCampaign(campaign.id)" *ngIf="campaign.id">
+              <mat-icon>delete</mat-icon>
+              Eliminar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <div class="no-campaigns" *ngIf="!loading && filteredCampaigns.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <h3>No se encontraron campañas</h3>
+        <p>Intenta ajustar los filtros de búsqueda</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Modal de Detalles -->
+  <div class="modal" *ngIf="selectedCampaign" (click)="closeModal($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ selectedCampaign.title }}</h2>
+        <button class="close-btn" (click)="selectedCampaign = null">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <h3>Información General</h3>
+          <p>{{ selectedCampaign.description }}</p>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Estado</span>
+              <span class="value status-badge" [class]="selectedCampaign.status">
+                {{ selectedCampaign.status | titlecase }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Fecha de Creación</span>
+              <span class="value">{{ selectedCampaign.created_at | date:'full' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Meta</span>
+              <span class="value">{{ selectedCampaign!.goal_amount | currency }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Recaudado</span>
+              <span class="value">{{ selectedCampaign.current_amount | currency }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button 
+          *ngIf="selectedCampaign?.id"
+          (click)="approveCampaign(selectedCampaign.id)"
+          [disabled]="selectedCampaign.status === 'approved'"
+          class="action-btn approve-btn">
+          <mat-icon>check</mat-icon>
+          Aprobar
+        </button>
+        <button 
+          *ngIf="selectedCampaign?.id"
+          (click)="rejectCampaign(selectedCampaign.id)"
+          [disabled]="selectedCampaign.status === 'rejected'"
+          class="action-btn reject-btn">
+          <mat-icon>close</mat-icon>
+          Rechazar
+        </button>
+        <button 
+          *ngIf="selectedCampaign?.id"
+          (click)="deleteCampaign(selectedCampaign.id)"
+          class="action-btn delete-btn">
+          <mat-icon>delete</mat-icon>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Galería de Imágenes -->
+  <div class="modal image-gallery-modal" *ngIf="selectedImagesGallery" (click)="closeImageGallery($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Imágenes de la Campaña: {{ selectedImagesGallery.title }}</h2>
+        <button class="close-btn" (click)="selectedImagesGallery = null">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="gallery-grid">
+          <div class="gallery-item" *ngFor="let imageUrl of selectedImagesGallery.image_urls; let i = index">
+            <img [src]="imageUrl" [alt]="'Imagen ' + (i + 1) + ' de la campaña'">
+          </div>
+        </div>
+        <div class="no-images" *ngIf="!selectedImagesGallery.image_urls?.length">
+          <mat-icon>no_photography</mat-icon>
+          <p>No hay imágenes disponibles para esta campaña</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Comprobante Médico -->
+  <div class="modal medical-proof-modal" *ngIf="selectedMedicalProof" (click)="closeMedicalProof($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Comprobante Médico: {{ selectedMedicalProof.campaign.title }}</h2>
+        <button class="close-btn" (click)="selectedMedicalProof = null">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="medical-proof-details">
+          <div class="detail-item">
+            <span class="label">Tipo de Comprobante:</span>
+            <span class="value">{{ getProofTypeLabel(selectedMedicalProof.proofType) }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Descripción:</span>
+            <span class="value">{{ selectedMedicalProof.proofDescription }}</span>
+          </div>
+        </div>
+        
+        <div class="proof-preview">
+          <ng-container *ngIf="!isPdfFile(selectedMedicalProof.proofUrl)">
+            <img [src]="selectedMedicalProof.proofUrl" alt="Comprobante médico">
+          </ng-container>
+          <ng-container *ngIf="isPdfFile(selectedMedicalProof.proofUrl)">
+            <div class="pdf-viewer">
+              <iframe [src]="selectedMedicalProof.proofUrl | safe" width="100%" height="500px"></iframe>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button 
+          *ngIf="selectedMedicalProof.campaign.id && selectedMedicalProof.campaign.status === 'pending'"
+          (click)="approveCampaign(selectedMedicalProof.campaign.id)"
+          class="action-btn approve-btn">
+          <mat-icon>check</mat-icon>
+          Aprobar Campaña
+        </button>
+        <button 
+          *ngIf="selectedMedicalProof.campaign.id && selectedMedicalProof.campaign.status === 'pending'"
+          (click)="rejectCampaign(selectedMedicalProof.campaign.id)"
+          class="action-btn reject-btn">
+          <mat-icon>close</mat-icon>
+          Rechazar Campaña
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<div class="news-details-container">
+  <!-- Loading State -->
+  <div class="loading-spinner" *ngIf="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error">
+    <mat-icon>error_outline</mat-icon>
+    <h2>¡Ups! Algo salió mal</h2>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadNews()">
+      <mat-icon>refresh</mat-icon>
+      Intentar de nuevo
+    </button>
+  </div>
+
+  <!-- News Details -->
+  <div class="news-content" *ngIf="!loading && !error && news">
+    <mat-card class="news-card">
+      <!-- Image Carousel -->
+      <div class="carousel-container">
+        <img [src]="getImageUrl()" 
+             [alt]="news.title"
+             (error)="handleImageError($event)">
+             
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators" *ngIf="news.image_urls && news.image_urls.length > 1">
+          <button class="indicator" 
+                  *ngFor="let _ of news.image_urls; let i = index"
+                  [class.active]="currentImageIndex === i"
+                  (click)="goToImage(i, $event)">
+          </button>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button class="carousel-nav prev" 
+                *ngIf="news.image_urls && news.image_urls.length > 1"
+                (click)="prevImage($event)">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button class="carousel-nav next"
+                *ngIf="news.image_urls && news.image_urls.length > 1"
+                (click)="nextImage($event)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <mat-card-content>
+        <div class="news-header">
+          <h1>{{ news.title }}</h1>
+          <div class="news-meta">
+            <span class="creator">Por {{ news.creator_name }}</span>
+            <span class="date">{{ news.created_at | date:'longDate' }}</span>
+          </div>
+        </div>
+
+        <div class="news-body">
+          <p>{{ news.content }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

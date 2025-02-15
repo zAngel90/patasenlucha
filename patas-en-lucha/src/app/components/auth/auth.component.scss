@@ -1,0 +1,249 @@
+app-auth {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+// Variables
+$white: #FFFFFF;
+$gray-100: #F7FAFC;
+$gray-200: #EDF2F7;
+$gray-300: #E2E8F0;
+$gray-400: #CBD5E0;
+$gray-500: #A0AEC0;
+$gray-600: #718096;
+$gray-700: #4A5568;
+
+// Mixins
+@mixin input-styles {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid $gray-300;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: $white;
+  color: var(--text-color);
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+  }
+
+  &::placeholder {
+    color: $gray-500;
+  }
+
+  &:disabled {
+    background-color: $gray-100;
+    cursor: not-allowed;
+  }
+}
+
+.auth-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: var(--background-color);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.auth-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 2rem;
+  text-align: center;
+  color: $white;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+}
+
+.auth-body {
+  padding: 2rem;
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: $gray-700;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    input {
+      @include input-styles;
+    }
+  }
+
+  .error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .submit-button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: $white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.95);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.auth-footer {
+  padding: 1.5rem;
+  text-align: center;
+  border-top: 1px solid $gray-200;
+  background-color: $gray-100;
+
+  p {
+    color: $gray-600;
+    margin-bottom: 0;
+  }
+
+  .switch-mode {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+  }
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $white;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Social Login
+.social-login {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $gray-200;
+  text-align: center;
+
+  p {
+    color: $gray-600;
+    margin-bottom: 1rem;
+  }
+
+  .social-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid $gray-300;
+      border-radius: 8px;
+      background: $white;
+      color: $gray-700;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        font-size: 1.25rem;
+      }
+
+      &:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background-color: rgba(255, 140, 66, 0.05);
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-header {
+    padding: 1.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .auth-body {
+    padding: 1.5rem;
+  }
+
+  .auth-footer {
+    padding: 1rem;
+  }
+
+  .social-login {
+    .social-buttons {
+      flex-direction: column;
+    }
+  }
+}

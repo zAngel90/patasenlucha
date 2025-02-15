@@ -1,0 +1,51 @@
+<div class="campaign-details">
+  <div class="loading" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Cargando detalles de la campaña...</p>
+  </div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div class="campaign-container" *ngIf="campaign">
+    <div class="campaign-header">
+      <div class="campaign-image">
+        <div class="inner-carousel">
+          <div #carouselTrack class="inner-carousel-track" [style.transform]="isBrowser ? 'translateX(' + getInnerTranslateValue() + 'px)' : 'none'">
+            <div class="inner-carousel-slide" *ngFor="let imageUrl of campaign.image_urls || ['assets/images/default-campaign.jpg']">
+              <img [src]="imageUrl" 
+                   [alt]="campaign.title"
+                   (error)="handleImageError($event)"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="inner-carousel-indicators" *ngIf="isBrowser && (campaign.image_urls?.length || 0) > 1">
+            <button class="inner-indicator" 
+                    *ngFor="let _ of campaign.image_urls; let i = index" 
+                    [class.active]="currentImageIndex === i"
+                    (click)="goToImage(i)">
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="campaign-info">
+        <h1>{{ campaign.title }}</h1>
+        <div class="campaign-meta">
+          <span class="creator">Por {{ campaign.creator_name }}</span>
+          <span class="date">{{ campaign.created_at | date }}</span>
+        </div>
+        <button class="btn btn-primary donate-button">
+          Donar a esta campaña
+        </button>
+      </div>
+    </div>
+
+    <div class="campaign-content">
+      <div class="description">
+        <h2>Sobre esta campaña</h2>
+        <p>{{ campaign.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
